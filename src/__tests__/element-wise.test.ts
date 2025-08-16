@@ -258,6 +258,129 @@ describe('Element-wise and Postfix Operators', () => {
     });
   });
 
+  describe('Transpose operator', () => {
+    it('should handle scalar transpose', () => {
+      const expressions = [
+        { expr: '5\'', expected: 5 },
+        { expr: '0\'', expected: 0 },
+        { expr: '(-3)\'', expected: -3 },
+        { expr: '3.14\'', expected: 3.14 },
+      ];
+
+      expressions.forEach(({ expr, expected }) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(true);
+        expect(evalResult.result).toBe(expected);
+      });
+    });
+
+    it('should handle 1D vector transpose', () => {
+      const expressions = [
+        { expr: '[1, 2, 3]\'', expected: [[1], [2], [3]] },
+        { expr: '[5]\'', expected: [[5]] },
+        { expr: '[1, 2, 3, 4, 5]\'', expected: [[1], [2], [3], [4], [5]] },
+        { expr: '[]\'', expected: [] },
+      ];
+
+      expressions.forEach(({ expr, expected }) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(true);
+        expect(evalResult.result).toEqual(expected);
+      });
+    });
+
+    it('should handle 2D matrix transpose', () => {
+      const expressions = [
+        { expr: '[[1, 2], [3, 4]]\'', expected: [[1, 3], [2, 4]] },
+        { expr: '[[1, 2, 3], [4, 5, 6]]\'', expected: [[1, 4], [2, 5], [3, 6]] },
+        { expr: '[[1], [2], [3]]\'', expected: [[1, 2, 3]] },
+        { expr: '[[1, 2, 3, 4]]\'', expected: [[1], [2], [3], [4]] },
+        { expr: '[[1, 2, 3], [4, 5, 6], [7, 8, 9]]\'', expected: [[1, 4, 7], [2, 5, 8], [3, 6, 9]] },
+      ];
+
+      expressions.forEach(({ expr, expected }) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(true);
+        expect(evalResult.result).toEqual(expected);
+      });
+    });
+
+    it('should handle double transpose (should return original)', () => {
+      const expressions = [
+        { expr: '5\'\'', expected: 5 },
+        { expr: '[[1, 2], [3, 4]]\'\'', expected: [[1, 2], [3, 4]] },
+        { expr: '[1, 2, 3]\'\'', expected: [[1, 2, 3]] }, // Note: vector becomes row matrix after double transpose
+      ];
+
+      expressions.forEach(({ expr, expected }) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(true);
+        expect(evalResult.result).toEqual(expected);
+      });
+    });
+
+    it('should handle transpose in expressions', () => {
+      const expressions = [
+        { expr: '[1, 2]\' + [[3], [4]]', expected: [[4], [6]] }, // Column vector addition
+        { expr: '[[1, 2], [3, 4]]\' * 2', expected: [[2, 6], [4, 8]] }, // Matrix transpose then scalar multiply
+      ];
+
+      expressions.forEach(({ expr, expected }) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(true);
+        expect(evalResult.result).toEqual(expected);
+      });
+    });
+
+    it('should handle edge cases and empty structures', () => {
+      const expressions = [
+        { expr: '[]\'', expected: [] },
+        { expr: '[[]]\'', expected: [] },
+      ];
+
+      expressions.forEach(({ expr, expected }) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(true);
+        expect(evalResult.result).toEqual(expected);
+      });
+    });
+
+    it('should throw error for invalid transpose inputs', () => {
+      const expressions = [
+        '[[1, 2], [3, 4, 5]]\'', // Jagged matrix (different row lengths)
+        '[[1, "hello"], [3, 4]]\'', // Non-numeric elements
+        '[1, [2, 3]]\'', // Mixed array (some numbers, some arrays)
+      ];
+
+      expressions.forEach((expr) => {
+        const parseResult = parser.parse(expr);
+        expect(parseResult.isValid).toBe(true);
+        
+        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        expect(evalResult.success).toBe(false);
+        expect(evalResult.error).toMatch(/transpose|Matrix transpose/i);
+      });
+    });
+  });
+
   describe('Mixed operations', () => {
     it('should handle combinations of element-wise and regular operations', () => {
       const expressions = [
@@ -265,6 +388,7 @@ describe('Element-wise and Postfix Operators', () => {
         { expr: '[1, 2] .* [3, 4] + [5, 6]', expected: [8, 14] }, // [3,8] + [5,6] = [8,14]
         { expr: '2! * [1, 2, 3]', expected: [2, 4, 6] }, // 2 * [1,2,3]
         { expr: '3! + [1, 2, 3]', expected: [7, 8, 9] }, // 6 + [1,2,3] = [7,8,9]
+        { expr: '[1, 2, 3]\' + [[1], [1], [1]]', expected: [[2], [3], [4]] }, // Vector transpose + column vector
       ];
 
       expressions.forEach(({ expr, expected }) => {

@@ -75,11 +75,17 @@ export class Tokenizer {
 
     // Handle strings (support both single and double quotes)
     if (char === '"' || char === "'") {
-      // If single quote without a closing pair, treat as transpose operator
+      // If single quote, check if it's actually a string or transpose operator
       if (char === "'") {
         const nextClose = this.input.indexOf("'", this.position + 1);
         if (nextClose === -1) {
-          // No closing quote found; not a string literal
+          // No closing quote found; treat as transpose operator
+          return this.readOperator(startLine, startColumn);
+        }
+        // If the closing quote is immediately adjacent (empty string ''), 
+        // treat both as separate transpose operators
+        if (nextClose === this.position + 1) {
+          // Empty string case - treat as transpose operator
           return this.readOperator(startLine, startColumn);
         }
       }

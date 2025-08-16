@@ -270,8 +270,8 @@ export class MathEvaluator {
         }
         return this.factorial(operand);
       case "'":
-        // Transpose operator (for future matrix support)
-        throw new Error('Transpose operator not yet implemented');
+        // Transpose operator
+        return this.transpose(operand);
       default:
         throw new Error(`Unsupported postfix operator: ${node.operator}`);
     }
@@ -454,8 +454,15 @@ export class MathEvaluator {
       }
       return left.map((a, i) => {
         const b = right[i];
+        
+        // Handle nested arrays recursively (for matrices)
+        if (Array.isArray(a) && Array.isArray(b)) {
+          return this.elementWiseOperation(a, b, operation);
+        }
+        
+        // Handle scalar elements
         if (typeof a !== 'number' || typeof b !== 'number') {
-          throw new Error(`Element-wise operations require numeric array elements`);
+          throw new Error(`Element-wise operations require numeric elements`);
         }
         return operation(a, b);
       });
@@ -464,8 +471,13 @@ export class MathEvaluator {
     // Handle array-scalar operations
     if (Array.isArray(left) && typeof right === 'number') {
       return left.map(a => {
+        // Handle nested arrays recursively
+        if (Array.isArray(a)) {
+          return this.elementWiseOperation(a, right, operation);
+        }
+        
         if (typeof a !== 'number') {
-          throw new Error(`Element-wise operations require numeric array elements`);
+          throw new Error(`Element-wise operations require numeric elements`);
         }
         return operation(a, right);
       });
@@ -474,8 +486,13 @@ export class MathEvaluator {
     // Handle scalar-array operations
     if (typeof left === 'number' && Array.isArray(right)) {
       return right.map(b => {
+        // Handle nested arrays recursively
+        if (Array.isArray(b)) {
+          return this.elementWiseOperation(left, b, operation);
+        }
+        
         if (typeof b !== 'number') {
-          throw new Error(`Element-wise operations require numeric array elements`);
+          throw new Error(`Element-wise operations require numeric elements`);
         }
         return operation(left, b);
       });
@@ -487,5 +504,62 @@ export class MathEvaluator {
     }
     
     throw new Error(`Element-wise operations not supported for types: ${typeof left}, ${typeof right}`);
+  }
+
+  private transpose(operand: any): any {
+    // Handle scalars (numbers)
+    if (typeof operand === 'number') {
+      return operand;
+    }
+
+    // Handle arrays
+    if (Array.isArray(operand)) {
+      // Check if it's a 1D array (vector)
+      if (operand.length === 0) {
+        return operand; // Empty array remains empty
+      }
+
+      // Check if all elements are numbers (1D vector)
+      if (operand.every(item => typeof item === 'number')) {
+        // Convert 1D row vector to 2D column vector
+        return operand.map(item => [item]);
+      }
+
+      // Check if it's a 2D array (matrix)
+      if (operand.every(row => Array.isArray(row))) {
+        const matrix = operand as number[][];
+        
+        // Validate that all rows have the same length
+        if (matrix.length === 0) {
+          return matrix; // Empty matrix
+        }
+        
+        const cols = matrix[0].length;
+        if (!matrix.every(row => row.length === cols)) {
+          throw new Error('Matrix transpose requires all rows to have the same length');
+        }
+
+        // Validate that all elements are numbers
+        if (!matrix.every(row => row.every(item => typeof item === 'number'))) {
+          throw new Error('Matrix transpose requires all elements to be numbers');
+        }
+
+        // Transpose: result[j][i] = matrix[i][j]
+        const result: number[][] = [];
+        for (let j = 0; j < cols; j++) {
+          result[j] = [];
+          for (let i = 0; i < matrix.length; i++) {
+            result[j][i] = matrix[i][j];
+          }
+        }
+        return result;
+      }
+
+      // Handle mixed array (some numbers, some arrays) - not supported
+      throw new Error('Transpose not supported for mixed arrays (some numbers, some arrays)');
+    }
+
+    // Handle other types
+    throw new Error(`Transpose not supported for type: ${typeof operand}`);
   }
 }
