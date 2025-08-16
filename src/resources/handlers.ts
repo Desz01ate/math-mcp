@@ -57,7 +57,9 @@ export class ResourceHandlers {
     try {
       const fs = await import('fs/promises');
       const path = await import('path');
-      const grammarPath = path.resolve(process.cwd(), 'grammar.txt');
+      const url = await import('url');
+      const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+      const grammarPath = path.resolve(__dirname, '../../grammar.txt');
       return await fs.readFile(grammarPath, 'utf-8');
     } catch {
       return 'Grammar specification not available';

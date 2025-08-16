@@ -84,6 +84,5 @@ if (options.allowedFunctions !== undefined) {
 }
 
 const mathServer = new MathMCPServer(config);
-const server = mathServer.server;
 
 await mathServer.run();
