@@ -314,10 +314,15 @@ export class MathEvaluator {
       case 'exp': return Math.exp(args[0]);
       case 'expm1': return Math.expm1(args[0]);
       case 'log1p': return Math.log1p(args[0]);
-      case 'min': return Math.min(...args);
-      case 'max': return Math.max(...args);
-      case 'sum': return args.reduce((acc, val) => acc + val, 0);
+      case 'min': return this.min(args);
+      case 'max': return this.max(args);
+      case 'mean': return this.mean(args);
+      case 'median': return this.median(args);
+      case 'std': return this.std(args);
+      case 'var': return this.variance(args);
+      case 'sum': return this.sum(args);
       case 'factorial': return this.factorial(args[0]);
+      case 'gamma': return this.gamma(args[0]);
       default:
         throw new Error(`Unknown function: ${funcName}`);
     }
@@ -561,5 +566,136 @@ export class MathEvaluator {
 
     // Handle other types
     throw new Error(`Transpose not supported for type: ${typeof operand}`);
+  }
+
+  private min(args: any[]): number {
+    // Handle both min(a, b, c) and min([a, b, c]) syntax
+    const values = this.flattenToNumbers(args);
+    if (values.length === 0) {
+      throw new Error('min function requires at least one argument');
+    }
+    return Math.min(...values);
+  }
+
+  private max(args: any[]): number {
+    // Handle both max(a, b, c) and max([a, b, c]) syntax
+    const values = this.flattenToNumbers(args);
+    if (values.length === 0) {
+      throw new Error('max function requires at least one argument');
+    }
+    return Math.max(...values);
+  }
+
+  private mean(args: any[]): number {
+    const values = this.flattenToNumbers(args);
+    if (values.length === 0) {
+      throw new Error('mean function requires at least one argument');
+    }
+    return values.reduce((sum, val) => sum + val, 0) / values.length;
+  }
+
+  private median(args: any[]): number {
+    const values = this.flattenToNumbers(args);
+    if (values.length === 0) {
+      throw new Error('median function requires at least one argument');
+    }
+    
+    const sorted = [...values].sort((a, b) => a - b);
+    const n = sorted.length;
+    
+    if (n % 2 === 0) {
+      // Even number of elements: average of middle two
+      return (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+    } else {
+      // Odd number of elements: middle element
+      return sorted[Math.floor(n / 2)];
+    }
+  }
+
+  private std(args: any[]): number {
+    return Math.sqrt(this.variance(args));
+  }
+
+  private variance(args: any[]): number {
+    const values = this.flattenToNumbers(args);
+    if (values.length === 0) {
+      throw new Error('variance function requires at least one argument');
+    }
+    if (values.length === 1) {
+      return 0; // Variance of a single value is 0
+    }
+    
+    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const sumSquaredDiffs = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0);
+    
+    // Use N-1 denominator (sample variance) for consistency with most statistical software
+    return sumSquaredDiffs / (values.length - 1);
+  }
+
+  private gamma(x: number): number {
+    // Gamma function implementation using Lanczos approximation
+    if (typeof x !== 'number') {
+      throw new Error('gamma function requires a numeric argument');
+    }
+    
+    if (x < 0) {
+      // Use reflection formula for negative values: Γ(z)Γ(1-z) = π/sin(πz)
+      return Math.PI / (Math.sin(Math.PI * x) * this.gamma(1 - x));
+    }
+    
+    if (x === 0) {
+      return Infinity;
+    }
+    
+    if (x < 1) {
+      // Use recurrence relation: Γ(z+1) = z·Γ(z)
+      return this.gamma(x + 1) / x;
+    }
+    
+    // Lanczos approximation for x >= 1
+    const g = 7;
+    const coefficients = [
+      0.99999999999980993,
+      676.5203681218851,
+      -1259.1392167224028,
+      771.32342877765313,
+      -176.61502916214059,
+      12.507343278686905,
+      -0.13857109526572012,
+      9.9843695780195716e-6,
+      1.5056327351493116e-7
+    ];
+    
+    x -= 1;
+    let result = coefficients[0];
+    for (let i = 1; i < coefficients.length; i++) {
+      result += coefficients[i] / (x + i);
+    }
+    
+    const t = x + g + 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, x + 0.5) * Math.exp(-t) * result;
+  }
+
+  private sum(args: any[]): number {
+    const values = this.flattenToNumbers(args);
+    return values.reduce((acc, val) => acc + val, 0);
+  }
+
+  private flattenToNumbers(args: any[]): number[] {
+    const result: number[] = [];
+    
+    for (const arg of args) {
+      if (typeof arg === 'number') {
+        result.push(arg);
+      } else if (Array.isArray(arg)) {
+        // Recursively flatten arrays
+        const flattened = this.flattenToNumbers(arg);
+        result.push(...flattened);
+      } else {
+        throw new Error(`Statistical functions require numeric arguments, got: ${typeof arg}`);
+      }
+    }
+    
+    return result;
   }
 }
