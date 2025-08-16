@@ -1,5 +1,5 @@
 import { evaluate } from 'mathjs';
-import { ASTNode, ASTNodeType, EvaluationResult, EvaluationContext, MathServerConfig, DEFAULT_ALLOWED_FUNCTIONS } from './types.js';
+import { ASTNode, ASTNodeType, EvaluationResult, EvaluationContext, MathServerConfig, DEFAULT_ALLOWED_FUNCTIONS, AngleMode } from './types.js';
 
 export class MathEvaluator {
   private config: MathServerConfig;
@@ -11,6 +11,7 @@ export class MathEvaluator {
       maxRecursionDepth: 100,
       allowedFunctions: [...DEFAULT_ALLOWED_FUNCTIONS],
       timeoutMs: 5000,
+      angleMode: 'radians',
       ...config,
     };
 
@@ -295,19 +296,24 @@ export class MathEvaluator {
       case 'ceil': return Math.ceil(args[0]);
       case 'floor': return Math.floor(args[0]);
       case 'round': return Math.round(args[0]);
-      case 'sin': return Math.sin(args[0]);
-      case 'cos': return Math.cos(args[0]);
-      case 'tan': return Math.tan(args[0]);
-      case 'asin': return Math.asin(args[0]);
-      case 'acos': return Math.acos(args[0]);
-      case 'atan': return Math.atan(args[0]);
-      case 'atan2': return Math.atan2(args[0], args[1]);
+      
+      // Trigonometric functions with angle mode support
+      case 'sin': return Math.sin(this.toRadians(args[0]));
+      case 'cos': return Math.cos(this.toRadians(args[0]));
+      case 'tan': return Math.tan(this.toRadians(args[0]));
+      case 'asin': return this.fromRadians(Math.asin(args[0]));
+      case 'acos': return this.fromRadians(Math.acos(args[0]));
+      case 'atan': return this.fromRadians(Math.atan(args[0]));
+      case 'atan2': return this.fromRadians(Math.atan2(args[0], args[1]));
+      
+      // Hyperbolic functions (always in natural units)
       case 'sinh': return Math.sinh(args[0]);
       case 'cosh': return Math.cosh(args[0]);
       case 'tanh': return Math.tanh(args[0]);
       case 'asinh': return Math.asinh(args[0]);
       case 'acosh': return Math.acosh(args[0]);
       case 'atanh': return Math.atanh(args[0]);
+      
       case 'log': return Math.log(args[0]);
       case 'log10': return Math.log10(args[0]);
       case 'log2': return Math.log2(args[0]);
@@ -697,5 +703,19 @@ export class MathEvaluator {
     }
     
     return result;
+  }
+
+  private toRadians(angle: number): number {
+    if (this.config.angleMode === 'degrees') {
+      return angle * (Math.PI / 180);
+    }
+    return angle;
+  }
+
+  private fromRadians(angle: number): number {
+    if (this.config.angleMode === 'degrees') {
+      return angle * (180 / Math.PI);
+    }
+    return angle;
   }
 }

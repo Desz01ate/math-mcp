@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import { MathMCPServer } from "./server.js";
-import { MathServerConfig, DEFAULT_ALLOWED_FUNCTIONS } from "./types.js";
+import { MathServerConfig, DEFAULT_ALLOWED_FUNCTIONS, AngleMode } from "./types.js";
 
 const program = new Command();
 
@@ -62,6 +62,21 @@ program
       
       return functions;
     }
+  )
+  .option(
+    '--angle-mode <mode>',
+    'Angle mode for trigonometric functions (radians, degrees, rad, deg)',
+    (value) => {
+      const normalizedValue = value.toLowerCase();
+      if (normalizedValue === 'radians' || normalizedValue === 'rad') {
+        return 'radians' as AngleMode;
+      } else if (normalizedValue === 'degrees' || normalizedValue === 'deg') {
+        return 'degrees' as AngleMode;
+      } else {
+        throw new Error(`Invalid angle mode: ${value}. Must be one of: radians, degrees, rad, deg`);
+      }
+    },
+    'radians' as AngleMode
   );
 
 program.parse();
@@ -81,6 +96,9 @@ if (options.timeout !== undefined) {
 }
 if (options.allowedFunctions !== undefined) {
   config.allowedFunctions = options.allowedFunctions;
+}
+if (options.angleMode !== undefined) {
+  config.angleMode = options.angleMode;
 }
 
 const mathServer = new MathMCPServer(config);

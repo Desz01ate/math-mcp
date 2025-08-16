@@ -147,9 +147,12 @@ export const DEFAULT_ALLOWED_FUNCTIONS = [
   'sum', 'factorial', 'gamma',
 ] as const;
 
+export type AngleMode = 'radians' | 'degrees';
+
 export interface MathServerConfig {
   maxExpressionLength: number;
   maxRecursionDepth: number;
   allowedFunctions: string[];
   timeoutMs: number;
+  angleMode: AngleMode;
 }
