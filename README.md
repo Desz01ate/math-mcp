@@ -39,11 +39,23 @@ A secure Model Context Protocol (MCP) server for mathematical expression evaluat
 - Node.js >= 18.0.0
 - npm or yarn package manager
 
-### Quick Setup
+### NPM Installation (Recommended)
+
+The package is available on npm at https://www.npmjs.com/package/math-mcp
+
+```bash
+# Install globally
+npm install -g math-mcp
+
+# Start the server
+math-mcp
+```
+
+### Development Installation
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/Desz01ate/math-mcp
 cd math-mcp
 
 # Install dependencies and build
@@ -58,10 +70,30 @@ npm start
 
 #### Claude Desktop Integration
 
-To use this MCP server with Claude Desktop, add the following configuration to your Claude Desktop settings:
+To use this MCP server with Claude Desktop, first install the package globally:
+
+```bash
+npm install -g math-mcp
+```
+
+Then add the following configuration to your Claude Desktop settings:
 
 **On macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **On Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "math-mcp": {
+      "command": "math-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}
+```
+
+**Alternative for development (from source):**
 
 ```json
 {
@@ -75,33 +107,21 @@ To use this MCP server with Claude Desktop, add the following configuration to y
 }
 ```
 
-**Alternative using npm global installation:**
-
-```bash
-# Install globally
-npm install -g math-mcp
-
-# Then use in Claude Desktop config:
-{
-  "mcpServers": {
-    "math-mcp": {
-      "command": "math-mcp",
-      "args": [],
-      "env": {}
-    }
-  }
-}
-```
-
 #### Other MCP Clients
 
 For other MCP-compatible clients, you can run the server directly:
 
 ```bash
-# Run with default settings
+# If installed globally via npm
+math-mcp
+
+# With custom configuration
+math-mcp --max-expression-length 2000 --timeout 10000
+
+# Or if running from source
 npm start
 
-# Or with custom configuration
+# With custom configuration from source
 npm start -- --max-expression-length 2000 --timeout 10000
 ```
 
