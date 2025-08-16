@@ -343,9 +343,8 @@ describe('Parser + Evaluator Integration', () => {
         'sin(cos(tan(x)))',
         'min(max(1, 2), abs(-3))',
         
-        // Arrays and objects
-        '[1, [2, 3], {x: 4}]',
-        '{a: 1, b: [2, 3], c: {d: 4}}',
+        // Arrays
+        '[1, [2, 3], 4]',
         
         // Assignments
         'x = y = z = 42',
@@ -375,7 +374,6 @@ describe('Parser + Evaluator Integration', () => {
         '2 + + 3',        // Double operator
         'sin cos(x)',     // Missing parentheses
         'x = = 5',        // Double assignment
-        '{x 1, y: 2}',    // Missing colon
         '[1 2 3]',        // Missing commas
         'if x then y',    // Non-grammar constructs
         '2 ** 3',         // Wrong power operator

@@ -72,11 +72,31 @@ export class GrammarParser {
     const checkpoint = this.current;
     let isAssignment = false;
     
-    // Check if we have identifier followed by '='
+    // Check if we have identifier followed by '=' or identifier followed by '(' ... ')' followed by '='
     if (this.check(TokenType.IDENTIFIER)) {
       this.advance();
       if (this.check(TokenType.ASSIGN)) {
+        // Simple variable assignment: x = ...
         isAssignment = true;
+      } else if (this.check(TokenType.LEFT_PAREN)) {
+        // Potential function assignment: f(...) = ...
+        this.advance(); // consume '('
+        
+        // Skip through parameter list
+        let parenDepth = 1;
+        while (!this.isAtEnd() && parenDepth > 0) {
+          if (this.check(TokenType.LEFT_PAREN)) {
+            parenDepth++;
+          } else if (this.check(TokenType.RIGHT_PAREN)) {
+            parenDepth--;
+          }
+          this.advance();
+        }
+        
+        // Check if we have '=' after the parentheses
+        if (this.check(TokenType.ASSIGN)) {
+          isAssignment = true;
+        }
       }
     }
     
@@ -143,30 +163,6 @@ export class GrammarParser {
           type: ASTNodeType.FUNCTION_CALL,
           callee: node,
           arguments: params,
-        };
-      } else if (this.match(TokenType.DOT)) {
-        const property = this.parseIdentifier();
-        node = {
-          type: ASTNodeType.MEMBER_ACCESS,
-          object: node,
-          property,
-        };
-      } else if (this.match(TokenType.LEFT_BRACKET)) {
-        const indices: ASTNode[] = [];
-        
-        if (!this.check(TokenType.RIGHT_BRACKET)) {
-          indices.push(this.parseIndexItem());
-          while (this.match(TokenType.COMMA)) {
-            indices.push(this.parseIndexItem());
-          }
-        }
-        
-        this.consume(TokenType.RIGHT_BRACKET, 'Expected \']\' after indices');
-        
-        node = {
-          type: ASTNodeType.INDEXING,
-          object: node,
-          arguments: indices,
         };
       } else {
         break;
@@ -371,6 +367,20 @@ export class GrammarParser {
   private parsePrimary(): ASTNode {
     if (this.match(TokenType.NUMBER)) {
       const value = parseFloat(this.previous().value);
+      
+      // Check if this number is followed by a unit
+      if (this.check(TokenType.IDENTIFIER)) {
+        const unit = this.parseUnit();
+        return {
+          type: ASTNodeType.UNIT_VALUE,
+          operand: {
+            type: ASTNodeType.NUMBER,
+            value,
+          },
+          unit: unit.value as string,
+        };
+      }
+      
       return {
         type: ASTNodeType.NUMBER,
         value,
@@ -421,22 +431,27 @@ export class GrammarParser {
       return this.parseArray();
     }
 
-    if (this.match(TokenType.LEFT_BRACE)) {
-      return this.parseObject();
-    }
 
     if (this.match(TokenType.LEFT_PAREN)) {
       const expr = this.parseExpression();
       this.consume(TokenType.RIGHT_PAREN, 'Expected \')\' after expression');
+      
+      // Check if this parenthesized expression is followed by a unit
+      if (this.check(TokenType.IDENTIFIER)) {
+        const unit = this.parseUnit();
+        return {
+          type: ASTNodeType.UNIT_VALUE,
+          operand: expr,
+          unit: unit.value as string,
+        };
+      }
+      
       return expr;
     }
 
     throw this.error('Expected expression');
   }
 
-  private parsePrimaryBase(): ASTNode {
-    throw this.error('Unexpected token');
-  }
 
   private parseArray(): ASTNode {
     const elements: ASTNode[] = [];
@@ -456,80 +471,6 @@ export class GrammarParser {
     };
   }
 
-  private parseObject(): ASTNode {
-    const properties: { key: ASTNode; value: ASTNode }[] = [];
-    
-    if (!this.check(TokenType.RIGHT_BRACE)) {
-      const key = this.parseIdentifier();
-      this.consume(TokenType.COLON, 'Expected \':\' after object key');
-      const value = this.parseExpression();
-      properties.push({ key, value });
-      
-      while (this.match(TokenType.COMMA)) {
-        const key = this.parseIdentifier();
-        this.consume(TokenType.COLON, 'Expected \':\' after object key');
-        const value = this.parseExpression();
-        properties.push({ key, value });
-      }
-    }
-    
-    this.consume(TokenType.RIGHT_BRACE, 'Expected \'}\' after object properties');
-    
-    return {
-      type: ASTNodeType.OBJECT,
-      properties,
-    };
-  }
-
-  private parseIndexItem(): ASTNode {
-    // Try to parse as slice first
-    if (this.check(TokenType.COLON)) {
-      return this.parseSlice();
-    }
-    
-    const expr = this.parseExpression();
-    
-    // Check if this is actually the start of a slice
-    if (this.match(TokenType.COLON)) {
-      const end = this.check(TokenType.COLON, TokenType.COMMA, TokenType.RIGHT_BRACKET) 
-                  ? undefined 
-                  : this.parseExpression();
-      
-      let step: ASTNode | undefined;
-      if (this.match(TokenType.COLON)) {
-        step = this.parseExpression();
-      }
-      
-      return {
-        type: ASTNodeType.SLICE,
-        start: expr,
-        end,
-        step,
-      };
-    }
-    
-    return expr;
-  }
-
-  private parseSlice(): ASTNode {
-    this.consume(TokenType.COLON, 'Expected \':\'');
-    
-    const end = this.check(TokenType.COLON, TokenType.COMMA, TokenType.RIGHT_BRACKET) 
-                ? undefined 
-                : this.parseExpression();
-    
-    let step: ASTNode | undefined;
-    if (this.match(TokenType.COLON)) {
-      step = this.parseExpression();
-    }
-    
-    return {
-      type: ASTNodeType.SLICE,
-      start: undefined,
-      end,
-      step,
-    };
-  }
 
   private parseIdentifier(): ASTNode {
     this.consume(TokenType.IDENTIFIER, 'Expected identifier');

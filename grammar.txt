@@ -4,8 +4,6 @@ Statement      ::= Assignment | Expression
 Assignment     ::= LValue "=" Expression
 LValue         ::= Identifier
                  | Identifier "(" ParamList? ")"
-                 | MemberAccess
-                 | Indexing
 
 Expression     ::= Conditional
 
@@ -36,12 +34,9 @@ Primary        ::= Number
                  | String
                  | Symbol
                  | Array
-                 | Object
                  | FunctionCall
                  | Parenthesized
                  | UnitValue
-                 | Indexing
-                 | MemberAccess
 
 FunctionCall   ::= Identifier "(" ArgList? ")"
                  | SummationCall
@@ -49,20 +44,9 @@ FunctionCall   ::= Identifier "(" ArgList? ")"
 SummationCall  ::= "sigma" "(" Identifier "," Expression "," Expression "," Expression ")"
                   /* sigma(variable, start, end, expression) */
 
-MemberAccess   ::= Primary "." Identifier
-
-Indexing       ::= Primary "[" IndexList? "]"
-
-IndexList      ::= IndexItem ("," IndexItem)*
-IndexItem      ::= Expression
-                 | Slice
-Slice          ::= (Expression)? ":" (Expression)? (":" Expression)?
-
 Parenthesized  ::= "(" Expression ")"
 
 Array          ::= "[" (Expression ("," Expression)*)? "]"
-Object         ::= "{" (Identifier ":" Expression
-                        ("," Identifier ":" Expression)*)? "}"
 
 UnitValue      ::= Number Unit
                  | "(" Expression ")" Unit

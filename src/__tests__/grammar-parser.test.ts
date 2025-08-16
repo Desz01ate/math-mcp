@@ -344,40 +344,6 @@ describe('GrammarParser', () => {
     });
   });
 
-  describe('Objects', () => {
-    it('should parse empty objects', () => {
-      const parser = new GrammarParser();
-      const result = parser.parse('{}');
-      
-      expect(result.isValid).toBe(true);
-      const expr = result.ast?.children?.[0];
-      expect(expr).toMatchObject({
-        type: ASTNodeType.OBJECT,
-        properties: []
-      });
-    });
-
-    it('should parse objects with properties', () => {
-      const parser = new GrammarParser();
-      const result = parser.parse('{x: 1, y: 2}');
-      
-      expect(result.isValid).toBe(true);
-      const expr = result.ast?.children?.[0];
-      expect(expr).toMatchObject({
-        type: ASTNodeType.OBJECT,
-        properties: [
-          {
-            key: { type: ASTNodeType.IDENTIFIER, value: 'x' },
-            value: { type: ASTNodeType.NUMBER, value: 1 }
-          },
-          {
-            key: { type: ASTNodeType.IDENTIFIER, value: 'y' },
-            value: { type: ASTNodeType.NUMBER, value: 2 }
-          }
-        ]
-      });
-    });
-  });
 
   describe('Comparison Operations', () => {
     it('should parse equality comparisons', () => {
