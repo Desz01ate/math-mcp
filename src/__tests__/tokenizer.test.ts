@@ -233,7 +233,7 @@ describe('Tokenizer', () => {
         { input: ';', expected: TokenType.SEMICOLON },
         { input: '?', expected: TokenType.QUESTION },
         { input: '=', expected: TokenType.ASSIGN },
-        { input: '!', expected: TokenType.NOT },
+        { input: '!', expected: TokenType.FACTORIAL },
         { input: "'", expected: TokenType.TRANSPOSE }
       ];
 

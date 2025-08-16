@@ -335,7 +335,7 @@ export class GrammarParser {
   }
 
   private parseUnary(): ASTNode {
-    if (this.match(TokenType.PLUS, TokenType.MINUS, TokenType.NOT)) {
+    if (this.match(TokenType.PLUS, TokenType.MINUS, TokenType.NOT, TokenType.FACTORIAL)) {
       const operator = this.previous().value;
       // Disallow consecutive '+' operators like '2 + + 3'
       const prevToken = this.tokens[this.current - 2] || { type: TokenType.EOF, value: '', line: 1, column: 1 } as Token;
@@ -345,7 +345,7 @@ export class GrammarParser {
       const operand = this.parseUnary();
       return {
         type: ASTNodeType.UNARY_OP,
-        operator,
+        operator: operator === '!' ? 'not' : operator, // Convert ! to 'not' for prefix usage
         operand,
       };
     }
@@ -356,7 +356,7 @@ export class GrammarParser {
   private parsePostfix(): ASTNode {
     let expr = this.parsePrimary();
 
-    while (this.match(TokenType.TRANSPOSE)) {
+    while (this.match(TokenType.FACTORIAL, TokenType.TRANSPOSE)) {
       const operator = this.previous().value;
       expr = {
         type: ASTNodeType.POSTFIX_OP,

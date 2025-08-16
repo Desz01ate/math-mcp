@@ -133,6 +133,9 @@ export class MathEvaluator {
       case ASTNodeType.UNARY_OP:
         return this.evaluateUnaryOp(node);
 
+      case ASTNodeType.POSTFIX_OP:
+        return this.evaluatePostfixOp(node);
+
       case ASTNodeType.FUNCTION_CALL:
         return this.evaluateFunctionCall(node);
 
@@ -217,6 +220,24 @@ export class MathEvaluator {
       case '!': return !operand;
       default:
         throw new Error(`Unsupported unary operator: ${node.operator}`);
+    }
+  }
+
+  private evaluatePostfixOp(node: ASTNode): any {
+    const operand = this.evaluateASTNode(node.operand!);
+
+    switch (node.operator) {
+      case '!': 
+        // Factorial operator
+        if (typeof operand !== 'number' || operand < 0 || !Number.isInteger(operand)) {
+          throw new Error('Factorial requires a non-negative integer');
+        }
+        return this.factorial(operand);
+      case "'":
+        // Transpose operator (for future matrix support)
+        throw new Error('Transpose operator not yet implemented');
+      default:
+        throw new Error(`Unsupported postfix operator: ${node.operator}`);
     }
   }
 

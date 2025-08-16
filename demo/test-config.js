@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Simple test to verify configuration is working
-import { MathMCPServer } from "./dist/server.js";
+import { MathMCPServer } from "../dist/server.js";
 
 // Test with custom config
 const config = {

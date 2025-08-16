@@ -284,7 +284,7 @@ export class Tokenizer {
       case ';': return { type: TokenType.SEMICOLON, value: char, line, column };
       case '?': return { type: TokenType.QUESTION, value: char, line, column };
       case '=': return { type: TokenType.ASSIGN, value: char, line, column };
-      case '!': return { type: TokenType.NOT, value: char, line, column };
+      case '!': return { type: TokenType.FACTORIAL, value: char, line, column };
       case "'": return { type: TokenType.TRANSPOSE, value: char, line, column };
       default:
         throw new Error(`Unexpected character '${char}' at line ${line}, column ${column}`);
