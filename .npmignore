@@ -1,0 +1,43 @@
+# Source files
+src/
+*.ts
+!dist/**/*.d.ts
+
+# Development files
+.github/
+demo/
+test-config.js
+tsconfig.json
+tsconfig.build.json
+vitest.config.ts
+.eslintrc*
+eslint.config.*
+
+# Build tools
+.npmrc
+.yarnrc*
+yarn.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# Environment
+.env*

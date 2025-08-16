@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests
+        run: npm test
+        
+      - name: Run type checking
+        run: npm run typecheck
+        
+      - name: Build package
+        run: npm run build
+        
+      - name: Test CLI functionality
+        run: |
+          # Test help command
+          node dist/index.js --help
+          
+          # Test version command
+          node dist/index.js --version
+          
+          # Test invalid function validation
+          ! node dist/index.js --allowed-functions "invalid"
+          
+          # Test valid configuration
+          timeout 3s node dist/index.js --max-expression-length 500 --timeout 1000 || true
