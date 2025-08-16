@@ -36,11 +36,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/username/math-mcp.git"
+    "url": "git+https://github.com/Desz01ate/math-mcp.git"
   },
-  "homepage": "https://github.com/username/math-mcp#readme",
+  "homepage": "https://github.com/Desz01ate/math-mcp#readme",
   "bugs": {
-    "url": "https://github.com/username/math-mcp/issues"
+    "url": "https://github.com/Desz01ate/math-mcp/issues"
   },
   "files": [
     "dist",
