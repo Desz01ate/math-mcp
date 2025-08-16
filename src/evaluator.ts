@@ -189,12 +189,41 @@ export class MathEvaluator {
         // Handle simple unit formatting when multiplying by known unit string
         if (typeof left === 'number' && typeof right === 'string') return `${left} ${right}`;
         if (typeof left === 'string' && typeof right === 'number') return `${right} ${left}`;
+        // Handle array operations
+        if (Array.isArray(left) || Array.isArray(right)) {
+          return this.elementWiseOperation(left, right, (a, b) => a * b);
+        }
         return left * right;
-      case '+': return left + right;
-      case '-': return left - right;
-      case '/': return left / right;
-      case '%': return left % right;
-      case '^': return Math.pow(left, right);
+      case '+': 
+        // Handle array operations
+        if (Array.isArray(left) || Array.isArray(right)) {
+          return this.elementWiseOperation(left, right, (a, b) => a + b);
+        }
+        return left + right;
+      case '-': 
+        // Handle array operations
+        if (Array.isArray(left) || Array.isArray(right)) {
+          return this.elementWiseOperation(left, right, (a, b) => a - b);
+        }
+        return left - right;
+      case '/': 
+        // Handle array operations
+        if (Array.isArray(left) || Array.isArray(right)) {
+          return this.elementWiseOperation(left, right, (a, b) => a / b);
+        }
+        return left / right;
+      case '%': 
+        // Handle array operations
+        if (Array.isArray(left) || Array.isArray(right)) {
+          return this.elementWiseOperation(left, right, (a, b) => a % b);
+        }
+        return left % right;
+      case '^': 
+        // Handle array operations
+        if (Array.isArray(left) || Array.isArray(right)) {
+          return this.elementWiseOperation(left, right, (a, b) => Math.pow(a, b));
+        }
+        return Math.pow(left, right);
       case '==': return left === right;
       case '!=': return left !== right;
       case '<': return left < right;
@@ -205,6 +234,13 @@ export class MathEvaluator {
       case '&&': return left && right;
       case 'or':
       case '||': return left || right;
+      
+      // Element-wise operators
+      case '.*': return this.elementWiseOperation(left, right, (a, b) => a * b);
+      case './': return this.elementWiseOperation(left, right, (a, b) => a / b);
+      case '.%': return this.elementWiseOperation(left, right, (a, b) => a % b);
+      case '.^': return this.elementWiseOperation(left, right, (a, b) => Math.pow(a, b));
+      
       default:
         throw new Error(`Unsupported binary operator: ${node.operator}`);
     }
@@ -408,5 +444,48 @@ export class MathEvaluator {
 
   listFunctions(): string[] {
     return this.config.allowedFunctions;
+  }
+
+  private elementWiseOperation(left: any, right: any, operation: (a: number, b: number) => number): any {
+    // Handle array-array operations
+    if (Array.isArray(left) && Array.isArray(right)) {
+      if (left.length !== right.length) {
+        throw new Error(`Array length mismatch: ${left.length} vs ${right.length}`);
+      }
+      return left.map((a, i) => {
+        const b = right[i];
+        if (typeof a !== 'number' || typeof b !== 'number') {
+          throw new Error(`Element-wise operations require numeric array elements`);
+        }
+        return operation(a, b);
+      });
+    }
+    
+    // Handle array-scalar operations
+    if (Array.isArray(left) && typeof right === 'number') {
+      return left.map(a => {
+        if (typeof a !== 'number') {
+          throw new Error(`Element-wise operations require numeric array elements`);
+        }
+        return operation(a, right);
+      });
+    }
+    
+    // Handle scalar-array operations
+    if (typeof left === 'number' && Array.isArray(right)) {
+      return right.map(b => {
+        if (typeof b !== 'number') {
+          throw new Error(`Element-wise operations require numeric array elements`);
+        }
+        return operation(left, b);
+      });
+    }
+    
+    // Handle scalar-scalar operations (fallback to regular operation)
+    if (typeof left === 'number' && typeof right === 'number') {
+      return operation(left, right);
+    }
+    
+    throw new Error(`Element-wise operations not supported for types: ${typeof left}, ${typeof right}`);
   }
 }
