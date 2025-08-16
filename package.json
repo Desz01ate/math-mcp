@@ -1,6 +1,6 @@
 {
   "name": "math-mcp",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "MCP server for mathematical expression evaluation with strict grammar validation",
   "main": "dist/index.js",
   "bin": {

@@ -24,6 +24,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           
+      - name: Set version from tag
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "Setting version to $VERSION"
+            npm version $VERSION --no-git-tag-version
+          else
+            echo "Not a tag, using development version"
+          fi
+          
       - name: Install dependencies
         run: npm ci
         
