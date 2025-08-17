@@ -10,7 +10,7 @@ describe('Statistical Functions', () => {
     const parseResult = parser.parse(expr);
     expect(parseResult.isValid).toBe(true);
     
-    const evalResult = evaluator.evaluateAST(parseResult.ast!);
+    const evalResult = evaluator.evaluate(parseResult.ast!);
     expect(evalResult.success).toBe(true);
     expect(Math.abs(evalResult.result - expected)).toBeLessThan(tolerance);
   };
@@ -36,7 +36,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('min([])');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('min function requires at least one argument');
     });
@@ -63,7 +63,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('max([])');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('max function requires at least one argument');
     });
@@ -90,7 +90,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('mean([])');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('mean function requires at least one argument');
     });
@@ -118,7 +118,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('median([])');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('median function requires at least one argument');
     });
@@ -142,7 +142,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('var([])');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('variance function requires at least one argument');
     });
@@ -168,8 +168,8 @@ describe('Statistical Functions', () => {
       expect(stdResult.isValid).toBe(true);
       expect(varResult.isValid).toBe(true);
       
-      const stdEval = evaluator.evaluateAST(stdResult.ast!);
-      const varEval = evaluator.evaluateAST(varResult.ast!);
+      const stdEval = evaluator.evaluate(stdResult.ast!);
+      const varEval = evaluator.evaluate(varResult.ast!);
       
       expect(stdEval.success).toBe(true);
       expect(varEval.success).toBe(true);
@@ -182,7 +182,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('std([])');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('variance function requires at least one argument');
     });
@@ -210,7 +210,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('gamma(0)');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(Infinity);
     });
@@ -219,7 +219,7 @@ describe('Statistical Functions', () => {
       const parseResult = parser.parse('gamma("hello")');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('gamma function requires a numeric argument');
     });

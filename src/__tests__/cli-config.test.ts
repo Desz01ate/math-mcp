@@ -38,13 +38,13 @@ describe('CLI Configuration', () => {
     // Test function restrictions are enforced in AST evaluation
     const parser = new GrammarParser();
     const parseResult = parser.parse('sqrt(4)');
-    const sqrtResult = evaluator.evaluateAST(parseResult.ast);
+    const sqrtResult = evaluator.evaluate(parseResult.ast);
     expect(sqrtResult.success).toBe(true);
     expect(sqrtResult.result).toBe(2);
     
     // Test that restricted function fails
     const sinParseResult = parser.parse('sin(0)');
-    const sinResult = evaluator.evaluateAST(sinParseResult.ast);
+    const sinResult = evaluator.evaluate(sinParseResult.ast);
     expect(sinResult.success).toBe(false);
     expect(sinResult.error).toContain('not allowed');
   });
@@ -109,7 +109,7 @@ describe('CLI Configuration', () => {
       const evaluator = (server as any).evaluator;
       
       const parseResult = parser.parse('sin(pi/2)');
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBeCloseTo(1, 10);
@@ -124,7 +124,7 @@ describe('CLI Configuration', () => {
       const evaluator = (server as any).evaluator;
       
       const parseResult = parser.parse('sin(pi/2)');
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBeCloseTo(1, 10);
@@ -140,7 +140,7 @@ describe('CLI Configuration', () => {
       
       // Test sin(90) = 1 in degrees mode
       const parseResult = parser.parse('sin(90)');
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBeCloseTo(1, 10);
@@ -156,7 +156,7 @@ describe('CLI Configuration', () => {
       
       // Test asin(1) = 90 degrees
       const parseResult = parser.parse('asin(1)');
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBeCloseTo(90, 10);
@@ -180,7 +180,7 @@ describe('CLI Configuration', () => {
 
       testCases.forEach(({ expr, expected }) => {
         const parseResult = parser.parse(expr);
-        const evalResult = evaluator.evaluateAST(parseResult.ast);
+        const evalResult = evaluator.evaluate(parseResult.ast);
         
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);

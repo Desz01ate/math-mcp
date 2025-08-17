@@ -39,7 +39,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(15); // 1+2+3+4+5 = 15
     });
@@ -50,7 +50,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(30); // 1+4+9+16 = 30
     });
@@ -61,7 +61,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(16); // 1+3+5+7 = 16
     });
@@ -75,7 +75,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(15); // 1+2+3+4+5 = 15
     });
@@ -92,7 +92,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       // Expected: (1-(1+0.5))^2 + (2-(1+1))^2 + (3-(1+1.5))^2 = 0.25 + 0 + 0.25 = 0.5
       expect(evalResult.result).toBeCloseTo(0.5, 6);
@@ -107,7 +107,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(5); // 1*1 + 2*2 = 1 + 4 = 5
     });
@@ -118,7 +118,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       // sin(0) + sin(π/2) + sin(π) = 0 + 1 + 0 = 1
       expect(evalResult.result).toBeCloseTo(1, 6);
@@ -130,7 +130,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(17); // 2 * (1+2+3) + 5 = 2 * 6 + 5 = 17
     });
@@ -146,7 +146,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(6); // 1+2+3 = 6
       
@@ -160,7 +160,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(10); // (1+2) + (3+4) = 3 + 7 = 10
     });
@@ -173,7 +173,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('must be numbers');
     });
@@ -184,7 +184,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('must be integers');
     });
@@ -195,7 +195,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(false);
       expect(evalResult.error).toContain('must evaluate to a number');
     });
@@ -206,7 +206,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(0); // Empty range should sum to 0
     });
@@ -219,7 +219,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(15); // 1+2+3+4+5 = 15
     });
@@ -236,7 +236,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(n * (n + 1) / 2); // 10*11/2 = 55
     });
@@ -251,7 +251,7 @@ describe('Summation (Sigma) Support', () => {
       const parseResult = parser.parse(expression);
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(n * (n + 1) * (2 * n + 1) / 6); // 5*6*11/6 = 55
     });

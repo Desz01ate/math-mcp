@@ -10,7 +10,7 @@ describe('Unit Values', () => {
     const parseResult = parser.parse(expr);
     expect(parseResult.isValid).toBe(true);
     
-    const evalResult = evaluator.evaluateAST(parseResult.ast!);
+    const evalResult = evaluator.evaluate(parseResult.ast!);
     expect(evalResult.success).toBe(true);
     expect(evalResult.result).toBe(expected);
   };
@@ -142,7 +142,7 @@ describe('Unit Values', () => {
     it('should work with logarithmic functions', () => {
       // log(e) should be very close to 1, but due to precision improvements may not be exactly 1
       const parseResult1 = parser.parse('(log(e)) nepers');
-      const evalResult1 = evaluator.evaluateAST(parseResult1.ast!);
+      const evalResult1 = evaluator.evaluate(parseResult1.ast!);
       expect(evalResult1.success).toBe(true);
       expect(evalResult1.result).toMatch(/^0\.999999999999999\d* nepers$/);
       

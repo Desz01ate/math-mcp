@@ -12,7 +12,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('0.1 + 0.2');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(0.3);
       expect(evalResult.result).not.toBe(0.30000000000000004); // Native JS result
@@ -22,7 +22,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('0.3 - 0.1');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(0.2);
       expect(evalResult.result).not.toBe(0.19999999999999998); // Native JS result
@@ -32,7 +32,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('1.4 * 3');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(4.2);
       expect(evalResult.result).not.toBe(4.199999999999999); // Native JS result
@@ -42,7 +42,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('0.57 * 100');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(57);
       expect(evalResult.result).not.toBe(56.99999999999999); // Native JS result
@@ -54,7 +54,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('sqrt(2) * sqrt(2)');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(2);
       expect(evalResult.result).not.toBe(2.0000000000000004); // Native JS result
@@ -64,7 +64,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('1 / 3 * 3');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       // Should be very close to 1, better than native JS precision
       expect(Math.abs(evalResult.result - 1)).toBeLessThan(1e-15);
@@ -82,7 +82,7 @@ describe('Precision Handling', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(Math.abs(evalResult.result - expected)).toBeLessThan(1e-15);
       });
@@ -102,7 +102,7 @@ describe('Precision Handling', () => {
         const parseResult = parser.parse(name);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         // Our constants should be at least as precise as native JS constants
         expect(Math.abs(evalResult.result - expected)).toBeLessThan(1e-15);
@@ -113,7 +113,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('sin(pi)');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       // sin(π) should be very close to 0
       expect(Math.abs(evalResult.result)).toBeLessThan(1e-15);
@@ -130,7 +130,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('a + b == c');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(true); // Should be true with precision handling
     });
@@ -147,7 +147,7 @@ describe('Precision Handling', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBe(expected);
       });
@@ -159,7 +159,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('[0.1, 0.2, 0.3] .* [3, 5, 2]');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toEqual([0.3, 1.0, 0.6]);
       // Verify these are exact, not approximations
@@ -183,7 +183,7 @@ describe('Precision Handling', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         
         if (typeof expected === 'number' && Number.isInteger(expected)) {
@@ -200,7 +200,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('1e-15 + 1e-16');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(1.1e-15);
     });
@@ -209,7 +209,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('9007199254740990 + 1');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBe(9007199254740991);
     });
@@ -252,7 +252,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('sin(90)');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = degreesEvaluator.evaluateAST(parseResult.ast!);
+      const evalResult = degreesEvaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(Math.abs(evalResult.result - 1)).toBeLessThan(1e-15);
     });
@@ -261,7 +261,7 @@ describe('Precision Handling', () => {
       const parseResult = parser.parse('cos(pi/2)');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(Math.abs(evalResult.result)).toBeLessThan(1e-15); // Should be very close to 0
     });

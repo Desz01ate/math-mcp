@@ -32,9 +32,9 @@ export class MathEvaluator {
   }
 
 
-  evaluateAST(ast: ASTNode): EvaluationResult {
+  evaluate(ast: ASTNode): EvaluationResult {
     try {
-      const result = this.evaluateASTNode(ast);
+      const result = this.evaluateNode(ast);
       return {
         success: true,
         result: this.formatResult(result),
@@ -47,7 +47,7 @@ export class MathEvaluator {
     }
   }
 
-  private evaluateASTNode(node: ASTNode): any {
+  private evaluateNode(node: ASTNode): any {
     switch (node.type) {
       case ASTNodeType.PROGRAM:
         // For program nodes, evaluate all children and return the last result
@@ -56,7 +56,7 @@ export class MathEvaluator {
         }
         let result: any;
         for (const child of node.children) {
-          result = this.evaluateASTNode(child);
+          result = this.evaluateNode(child);
         }
         return result;
 
@@ -89,16 +89,16 @@ export class MathEvaluator {
         return this.evaluateFunctionCall(node);
 
       case ASTNodeType.ARRAY:
-        return node.elements?.map(element => this.evaluateASTNode(element)) || [];
+        return node.elements?.map(element => this.evaluateNode(element)) || [];
 
       case ASTNodeType.CONDITIONAL:
-        const condition = this.evaluateASTNode(node.condition!);
+        const condition = this.evaluateNode(node.condition!);
         return condition ? 
-          this.evaluateASTNode(node.consequent!) : 
-          this.evaluateASTNode(node.alternate!);
+          this.evaluateNode(node.consequent!) : 
+          this.evaluateNode(node.alternate!);
 
       case ASTNodeType.ASSIGNMENT:
-        const value = this.evaluateASTNode(node.right!);
+        const value = this.evaluateNode(node.right!);
         const lvalue = node.left!;
         if (lvalue.type === ASTNodeType.IDENTIFIER) {
           this.context.variables.set(lvalue.value as string, value);
@@ -106,14 +106,14 @@ export class MathEvaluator {
         return value;
 
       case ASTNodeType.UNIT_VALUE:
-        const numValue = this.evaluateASTNode(node.operand!);
+        const numValue = this.evaluateNode(node.operand!);
         const unitStr = node.unit!;
         return `${numValue} ${unitStr}`;
 
       case ASTNodeType.RANGE:
-        const start = this.evaluateASTNode(node.start!);
-        const end = this.evaluateASTNode(node.end!);
-        const step = node.step ? this.evaluateASTNode(node.step) : 1;
+        const start = this.evaluateNode(node.start!);
+        const end = this.evaluateNode(node.end!);
+        const step = node.step ? this.evaluateNode(node.step) : 1;
         // Simple range implementation
         const range = [];
         for (let i = start; i <= end; i += step) {
@@ -130,8 +130,8 @@ export class MathEvaluator {
   }
 
   private evaluateBinaryOp(node: ASTNode): any {
-    const left = this.evaluateASTNode(node.left!);
-    const right = this.evaluateASTNode(node.right!);
+    const left = this.evaluateNode(node.left!);
+    const right = this.evaluateNode(node.right!);
 
     switch (node.operator) {
       case '*':
@@ -202,7 +202,7 @@ export class MathEvaluator {
   }
 
   private evaluateUnaryOp(node: ASTNode): any {
-    const operand = this.evaluateASTNode(node.operand!);
+    const operand = this.evaluateNode(node.operand!);
 
     switch (node.operator) {
       case '+': return typeof operand === 'number' ? operand : +operand;
@@ -215,7 +215,7 @@ export class MathEvaluator {
   }
 
   private evaluatePostfixOp(node: ASTNode): any {
-    const operand = this.evaluateASTNode(node.operand!);
+    const operand = this.evaluateNode(node.operand!);
 
     switch (node.operator) {
       case '!': 
@@ -234,7 +234,7 @@ export class MathEvaluator {
 
   private evaluateFunctionCall(node: ASTNode): any {
     const funcName = (node.callee as any).value as string;
-    const args = node.arguments?.map(arg => this.evaluateASTNode(arg)) || [];
+    const args = node.arguments?.map(arg => this.evaluateNode(arg)) || [];
 
     // Check if function is allowed
     if (!this.config.allowedFunctions.includes(funcName)) {
@@ -290,8 +290,8 @@ export class MathEvaluator {
 
   private evaluateSummation(node: ASTNode): any {
     const variableName = (node.variable as any).value as string;
-    const startValue = this.evaluateASTNode(node.start!);
-    const endValue = this.evaluateASTNode(node.end!);
+    const startValue = this.evaluateNode(node.start!);
+    const endValue = this.evaluateNode(node.end!);
     const expression = node.expression!;
     
     // Validate start and end values
@@ -314,7 +314,7 @@ export class MathEvaluator {
         this.context.variables.set(variableName, i);
         
         // Evaluate the expression with the current variable value
-        const termValue = this.evaluateASTNode(expression);
+        const termValue = this.evaluateNode(expression);
         
         // Add to sum (ensure it's a number)
         if (typeof termValue === 'number') {

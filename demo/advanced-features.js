@@ -31,7 +31,7 @@ nestedSummationExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -77,7 +77,7 @@ complexConditionalExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -125,7 +125,7 @@ newtonMethodExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -164,7 +164,7 @@ fibonacciExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -221,7 +221,7 @@ edgeCaseExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -252,7 +252,7 @@ performanceExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       const endTime = Date.now();
       const duration = endTime - startTime;
       

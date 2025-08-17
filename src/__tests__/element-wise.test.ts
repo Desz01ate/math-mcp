@@ -18,7 +18,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -34,7 +34,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -50,7 +50,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -66,7 +66,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -84,7 +84,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -101,7 +101,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -119,7 +119,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBe(expected);
       });
@@ -136,7 +136,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(false);
         expect(evalResult.error).toContain('Array length mismatch');
       });
@@ -158,7 +158,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -178,7 +178,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -199,7 +199,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBe(expected);
       });
@@ -217,7 +217,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBe(expected);
       });
@@ -235,7 +235,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBe(expected);
       });
@@ -251,7 +251,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(false);
         expect(evalResult.error).toContain('Factorial requires a non-negative integer');
       });
@@ -271,7 +271,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBe(expected);
       });
@@ -289,7 +289,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -308,7 +308,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -325,7 +325,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -341,7 +341,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -357,7 +357,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });
@@ -374,7 +374,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(false);
         expect(evalResult.error).toMatch(/transpose|Matrix transpose/i);
       });
@@ -395,7 +395,7 @@ describe('Element-wise and Postfix Operators', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toEqual(expected);
       });

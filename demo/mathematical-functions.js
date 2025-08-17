@@ -28,7 +28,7 @@ trigExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -62,7 +62,7 @@ hyperbolicExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -99,7 +99,7 @@ logExpExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -137,7 +137,7 @@ utilityExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -170,7 +170,7 @@ complexExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
