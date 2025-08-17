@@ -1,4 +1,3 @@
-import { evaluate } from 'mathjs';
 import { ASTNode, ASTNodeType, EvaluationResult, EvaluationContext, MathServerConfig, DEFAULT_ALLOWED_FUNCTIONS, AngleMode } from './types.js';
 
 export class MathEvaluator {
@@ -31,58 +30,6 @@ export class MathEvaluator {
     };
   }
 
-  evaluate(expression: string): EvaluationResult {
-    try {
-      // Basic security checks
-      if (expression.length > this.config.maxExpressionLength) {
-        return {
-          success: false,
-          error: `Expression too long (max ${this.config.maxExpressionLength} characters)`,
-        };
-      }
-
-      // Check for potentially dangerous patterns
-      if (this.containsUnsafePatterns(expression)) {
-        return {
-          success: false,
-          error: 'Expression contains unsafe patterns',
-        };
-      }
-
-      try {
-        // Create scope with variables and constants
-        const scope: Record<string, any> = {};
-        
-        // Add constants
-        this.context.constants.forEach((value, key) => {
-          scope[key] = value;
-        });
-        
-        // Add variables
-        this.context.variables.forEach((value, key) => {
-          scope[key] = value;
-        });
-
-        // Use mathjs evaluate directly with scope
-        const result = evaluate(expression, scope);
-        
-        return {
-          success: true,
-          result: this.formatResult(result),
-        };
-      } catch (error) {
-        return {
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown evaluation error',
-        };
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown evaluation error',
-      };
-    }
-  }
 
   evaluateAST(ast: ASTNode): EvaluationResult {
     try {
@@ -391,19 +338,6 @@ export class MathEvaluator {
     return result;
   }
 
-  private containsUnsafePatterns(expression: string): boolean {
-    const unsafePatterns = [
-      /\b(import|require|eval|Function|setTimeout|setInterval)\b/,
-      /__proto__|prototype/,
-      /\bconstructor\b/,
-      /\bprocess\b/,
-      /\bglobal\b/,
-      /\bwindow\b/,
-      /\bdocument\b/,
-    ];
-
-    return unsafePatterns.some(pattern => pattern.test(expression));
-  }
 
   private formatResult(result: any): any {
     // Handle mathjs types

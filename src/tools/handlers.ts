@@ -42,9 +42,7 @@ export class ToolHandlers {
       };
     }
 
-    const result = validation.ast
-      ? this.evaluator.evaluateAST(validation.ast)
-      : this.evaluator.evaluate(expression);
+    const result = this.evaluator.evaluateAST(validation.ast);
 
     if (!result.success) {
       return {
@@ -113,9 +111,7 @@ export class ToolHandlers {
       };
     }
 
-    const result = validation.ast
-      ? this.evaluator.evaluateAST(validation.ast)
-      : this.evaluator.evaluate(expression);
+    const result = this.evaluator.evaluateAST(validation.ast);
 
     if (!result.success) {
       return {

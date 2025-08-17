@@ -17,14 +17,14 @@ const mathServer = new MathMCPServer(config);
 // Access the evaluator to check if config was applied
 console.log('Evaluator config applied successfully!');
 
-// Test that the evaluator rejects long expressions
+// Test that the configuration was applied properly
 try {
-  const longExpression = 'x'.repeat(600); // Longer than our 500 limit
-  const result = mathServer.toolHandlers.evaluator.evaluate(longExpression);
-  console.log('Long expression test result:', result);
+  // Check that allowed functions were configured correctly
+  const allowedFunctions = mathServer.toolHandlers.evaluator.listFunctions();
+  console.log('Allowed functions:', allowedFunctions);
   
-  if (!result.success && result.error?.includes('too long')) {
-    console.log('✓ Configuration is working - long expressions are rejected');
+  if (allowedFunctions.length === 3 && allowedFunctions.includes('sqrt') && allowedFunctions.includes('sin') && allowedFunctions.includes('cos')) {
+    console.log('✓ Configuration is working - allowed functions are correctly restricted');
   } else {
     console.log('✗ Configuration may not be working properly');
   }
