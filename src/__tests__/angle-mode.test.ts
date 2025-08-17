@@ -21,7 +21,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -39,7 +39,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -64,7 +64,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -84,7 +84,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -108,7 +108,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -130,7 +130,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -152,7 +152,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -172,7 +172,7 @@ describe('Angle Mode Configuration', () => {
         const parseResult = parser.parse(expr);
         expect(parseResult.isValid).toBe(true);
         
-        const evalResult = evaluator.evaluateAST(parseResult.ast!);
+        const evalResult = evaluator.evaluate(parseResult.ast!);
         expect(evalResult.success).toBe(true);
         expect(evalResult.result).toBeCloseTo(expected, 10);
       });
@@ -186,7 +186,7 @@ describe('Angle Mode Configuration', () => {
       const parseResult = parser.parse('sin(pi/2)');
       expect(parseResult.isValid).toBe(true);
       
-      const evalResult = evaluator.evaluateAST(parseResult.ast!);
+      const evalResult = evaluator.evaluate(parseResult.ast!);
       expect(evalResult.success).toBe(true);
       expect(evalResult.result).toBeCloseTo(1, 10);
     });

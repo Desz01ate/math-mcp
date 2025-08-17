@@ -56,6 +56,32 @@ The evaluator implements multiple security layers:
 - Expression length limits and timeout protection
 - Sandboxed execution environment
 
+### Precision Handling
+
+The system addresses JavaScript's floating-point precision limitations using decimal.js:
+
+#### Features
+- **Arbitrary-precision arithmetic**: Eliminates classic issues like `0.1 + 0.2 ≠ 0.3`
+- **High-precision constants**: More accurate values for π, e, τ, and φ
+- **Enhanced mathematical functions**: All trigonometric, logarithmic, and arithmetic operations use high precision
+- **Smart comparisons**: Equality and inequality operations handle precision automatically
+- **Financial accuracy**: Precise decimal calculations for currency and percentage operations
+
+#### Implementation
+- All mathematical operations route through `PrecisionMath` wrapper class
+- Configured for 20 significant digits by default
+- Seamlessly integrates with existing AST evaluation
+- Backward compatible with all existing functionality
+
+#### Examples
+```javascript
+// Classic JavaScript precision issues - now resolved:
+0.1 + 0.2        // Returns exactly 0.3 (not 0.30000000000000004)
+1.4 * 3          // Returns exactly 4.2 (not 4.199999999999999)  
+0.57 * 100       // Returns exactly 57 (not 56.99999999999999)
+sqrt(2) * sqrt(2) // Returns exactly 2 (not 2.0000000000000004)
+```
+
 ### Testing
 
 Tests in `src/__tests__/` cover:

@@ -1,5 +1,5 @@
-import { evaluate } from 'mathjs';
 import { ASTNode, ASTNodeType, EvaluationResult, EvaluationContext, MathServerConfig, DEFAULT_ALLOWED_FUNCTIONS, AngleMode } from './types.js';
+import { PrecisionMath } from './precision.js';
 
 export class MathEvaluator {
   private config: MathServerConfig;
@@ -15,15 +15,15 @@ export class MathEvaluator {
       ...config,
     };
 
-    // Initialize context
+    // Initialize context with high-precision constants
     this.context = {
       variables: new Map(),
       functions: new Map(),
       constants: new Map<string, any>([
-        ['pi', Math.PI],
-        ['e', Math.E],
-        ['tau', 2 * Math.PI],
-        ['phi', (1 + Math.sqrt(5)) / 2],
+        ['pi', PrecisionMath.PI],
+        ['e', PrecisionMath.E],
+        ['tau', PrecisionMath.TAU],
+        ['phi', PrecisionMath.PHI],
         ['true', true],
         ['false', false],
         ['cm', 'cm'],
@@ -31,62 +31,10 @@ export class MathEvaluator {
     };
   }
 
-  evaluate(expression: string): EvaluationResult {
+
+  evaluate(ast: ASTNode): EvaluationResult {
     try {
-      // Basic security checks
-      if (expression.length > this.config.maxExpressionLength) {
-        return {
-          success: false,
-          error: `Expression too long (max ${this.config.maxExpressionLength} characters)`,
-        };
-      }
-
-      // Check for potentially dangerous patterns
-      if (this.containsUnsafePatterns(expression)) {
-        return {
-          success: false,
-          error: 'Expression contains unsafe patterns',
-        };
-      }
-
-      try {
-        // Create scope with variables and constants
-        const scope: Record<string, any> = {};
-        
-        // Add constants
-        this.context.constants.forEach((value, key) => {
-          scope[key] = value;
-        });
-        
-        // Add variables
-        this.context.variables.forEach((value, key) => {
-          scope[key] = value;
-        });
-
-        // Use mathjs evaluate directly with scope
-        const result = evaluate(expression, scope);
-        
-        return {
-          success: true,
-          result: this.formatResult(result),
-        };
-      } catch (error) {
-        return {
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown evaluation error',
-        };
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown evaluation error',
-      };
-    }
-  }
-
-  evaluateAST(ast: ASTNode): EvaluationResult {
-    try {
-      const result = this.evaluateASTNode(ast);
+      const result = this.evaluateNode(ast);
       return {
         success: true,
         result: this.formatResult(result),
@@ -99,7 +47,7 @@ export class MathEvaluator {
     }
   }
 
-  private evaluateASTNode(node: ASTNode): any {
+  private evaluateNode(node: ASTNode): any {
     switch (node.type) {
       case ASTNodeType.PROGRAM:
         // For program nodes, evaluate all children and return the last result
@@ -108,7 +56,7 @@ export class MathEvaluator {
         }
         let result: any;
         for (const child of node.children) {
-          result = this.evaluateASTNode(child);
+          result = this.evaluateNode(child);
         }
         return result;
 
@@ -141,16 +89,16 @@ export class MathEvaluator {
         return this.evaluateFunctionCall(node);
 
       case ASTNodeType.ARRAY:
-        return node.elements?.map(element => this.evaluateASTNode(element)) || [];
+        return node.elements?.map(element => this.evaluateNode(element)) || [];
 
       case ASTNodeType.CONDITIONAL:
-        const condition = this.evaluateASTNode(node.condition!);
+        const condition = this.evaluateNode(node.condition!);
         return condition ? 
-          this.evaluateASTNode(node.consequent!) : 
-          this.evaluateASTNode(node.alternate!);
+          this.evaluateNode(node.consequent!) : 
+          this.evaluateNode(node.alternate!);
 
       case ASTNodeType.ASSIGNMENT:
-        const value = this.evaluateASTNode(node.right!);
+        const value = this.evaluateNode(node.right!);
         const lvalue = node.left!;
         if (lvalue.type === ASTNodeType.IDENTIFIER) {
           this.context.variables.set(lvalue.value as string, value);
@@ -158,14 +106,14 @@ export class MathEvaluator {
         return value;
 
       case ASTNodeType.UNIT_VALUE:
-        const numValue = this.evaluateASTNode(node.operand!);
+        const numValue = this.evaluateNode(node.operand!);
         const unitStr = node.unit!;
         return `${numValue} ${unitStr}`;
 
       case ASTNodeType.RANGE:
-        const start = this.evaluateASTNode(node.start!);
-        const end = this.evaluateASTNode(node.end!);
-        const step = node.step ? this.evaluateASTNode(node.step) : 1;
+        const start = this.evaluateNode(node.start!);
+        const end = this.evaluateNode(node.end!);
+        const step = node.step ? this.evaluateNode(node.step) : 1;
         // Simple range implementation
         const range = [];
         for (let i = start; i <= end; i += step) {
@@ -182,8 +130,8 @@ export class MathEvaluator {
   }
 
   private evaluateBinaryOp(node: ASTNode): any {
-    const left = this.evaluateASTNode(node.left!);
-    const right = this.evaluateASTNode(node.right!);
+    const left = this.evaluateNode(node.left!);
+    const right = this.evaluateNode(node.right!);
 
     switch (node.operator) {
       case '*':
@@ -192,55 +140,61 @@ export class MathEvaluator {
         if (typeof left === 'string' && typeof right === 'number') return `${right} ${left}`;
         // Handle array operations
         if (Array.isArray(left) || Array.isArray(right)) {
-          return this.elementWiseOperation(left, right, (a, b) => a * b);
+          return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.multiply(a, b));
         }
-        return left * right;
+        return PrecisionMath.multiply(left, right);
       case '+': 
         // Handle array operations
         if (Array.isArray(left) || Array.isArray(right)) {
-          return this.elementWiseOperation(left, right, (a, b) => a + b);
+          return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.add(a, b));
         }
-        return left + right;
+        return PrecisionMath.add(left, right);
       case '-': 
         // Handle array operations
         if (Array.isArray(left) || Array.isArray(right)) {
-          return this.elementWiseOperation(left, right, (a, b) => a - b);
+          return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.subtract(a, b));
         }
-        return left - right;
+        return PrecisionMath.subtract(left, right);
       case '/': 
         // Handle array operations
         if (Array.isArray(left) || Array.isArray(right)) {
-          return this.elementWiseOperation(left, right, (a, b) => a / b);
+          return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.divide(a, b));
         }
-        return left / right;
+        return PrecisionMath.divide(left, right);
       case '%': 
         // Handle array operations
         if (Array.isArray(left) || Array.isArray(right)) {
-          return this.elementWiseOperation(left, right, (a, b) => a % b);
+          return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.modulo(a, b));
         }
-        return left % right;
+        return PrecisionMath.modulo(left, right);
       case '^': 
         // Handle array operations
         if (Array.isArray(left) || Array.isArray(right)) {
-          return this.elementWiseOperation(left, right, (a, b) => Math.pow(a, b));
+          return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.power(a, b));
         }
-        return Math.pow(left, right);
-      case '==': return left === right;
-      case '!=': return left !== right;
-      case '<': return left < right;
-      case '<=': return left <= right;
-      case '>': return left > right;
-      case '>=': return left >= right;
+        return PrecisionMath.power(left, right);
+      case '==': return typeof left === 'number' && typeof right === 'number' ? 
+                   PrecisionMath.equals(left, right) : left === right;
+      case '!=': return typeof left === 'number' && typeof right === 'number' ? 
+                   !PrecisionMath.equals(left, right) : left !== right;
+      case '<': return typeof left === 'number' && typeof right === 'number' ? 
+                  PrecisionMath.lessThan(left, right) : left < right;
+      case '<=': return typeof left === 'number' && typeof right === 'number' ? 
+                   PrecisionMath.lessThanOrEqual(left, right) : left <= right;
+      case '>': return typeof left === 'number' && typeof right === 'number' ? 
+                  PrecisionMath.greaterThan(left, right) : left > right;
+      case '>=': return typeof left === 'number' && typeof right === 'number' ? 
+                   PrecisionMath.greaterThanOrEqual(left, right) : left >= right;
       case 'and':
       case '&&': return left && right;
       case 'or':
       case '||': return left || right;
       
       // Element-wise operators
-      case '.*': return this.elementWiseOperation(left, right, (a, b) => a * b);
-      case './': return this.elementWiseOperation(left, right, (a, b) => a / b);
-      case '.%': return this.elementWiseOperation(left, right, (a, b) => a % b);
-      case '.^': return this.elementWiseOperation(left, right, (a, b) => Math.pow(a, b));
+      case '.*': return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.multiply(a, b));
+      case './': return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.divide(a, b));
+      case '.%': return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.modulo(a, b));
+      case '.^': return this.elementWiseOperation(left, right, (a, b) => PrecisionMath.power(a, b));
       
       default:
         throw new Error(`Unsupported binary operator: ${node.operator}`);
@@ -248,11 +202,11 @@ export class MathEvaluator {
   }
 
   private evaluateUnaryOp(node: ASTNode): any {
-    const operand = this.evaluateASTNode(node.operand!);
+    const operand = this.evaluateNode(node.operand!);
 
     switch (node.operator) {
-      case '+': return +operand;
-      case '-': return -operand;
+      case '+': return typeof operand === 'number' ? operand : +operand;
+      case '-': return typeof operand === 'number' ? PrecisionMath.negate(operand) : -operand;
       case 'not':
       case '!': return !operand;
       default:
@@ -261,7 +215,7 @@ export class MathEvaluator {
   }
 
   private evaluatePostfixOp(node: ASTNode): any {
-    const operand = this.evaluateASTNode(node.operand!);
+    const operand = this.evaluateNode(node.operand!);
 
     switch (node.operator) {
       case '!': 
@@ -280,7 +234,7 @@ export class MathEvaluator {
 
   private evaluateFunctionCall(node: ASTNode): any {
     const funcName = (node.callee as any).value as string;
-    const args = node.arguments?.map(arg => this.evaluateASTNode(arg)) || [];
+    const args = node.arguments?.map(arg => this.evaluateNode(arg)) || [];
 
     // Check if function is allowed
     if (!this.config.allowedFunctions.includes(funcName)) {
@@ -289,37 +243,37 @@ export class MathEvaluator {
 
     // Handle built-in mathematical functions
     switch (funcName) {
-      case 'sqrt': return Math.sqrt(args[0]);
-      case 'cbrt': return Math.cbrt(args[0]);
-      case 'abs': return Math.abs(args[0]);
-      case 'sign': return Math.sign(args[0]);
-      case 'ceil': return Math.ceil(args[0]);
-      case 'floor': return Math.floor(args[0]);
-      case 'round': return Math.round(args[0]);
+      case 'sqrt': return PrecisionMath.sqrt(args[0]);
+      case 'cbrt': return PrecisionMath.cbrt(args[0]);
+      case 'abs': return PrecisionMath.abs(args[0]);
+      case 'sign': return PrecisionMath.sign(args[0]);
+      case 'ceil': return PrecisionMath.ceil(args[0]);
+      case 'floor': return PrecisionMath.floor(args[0]);
+      case 'round': return PrecisionMath.round(args[0]);
       
       // Trigonometric functions with angle mode support
-      case 'sin': return Math.sin(this.toRadians(args[0]));
-      case 'cos': return Math.cos(this.toRadians(args[0]));
-      case 'tan': return Math.tan(this.toRadians(args[0]));
-      case 'asin': return this.fromRadians(Math.asin(args[0]));
-      case 'acos': return this.fromRadians(Math.acos(args[0]));
-      case 'atan': return this.fromRadians(Math.atan(args[0]));
-      case 'atan2': return this.fromRadians(Math.atan2(args[0], args[1]));
+      case 'sin': return PrecisionMath.sin(this.toRadians(args[0]));
+      case 'cos': return PrecisionMath.cos(this.toRadians(args[0]));
+      case 'tan': return PrecisionMath.tan(this.toRadians(args[0]));
+      case 'asin': return this.fromRadians(PrecisionMath.asin(args[0]));
+      case 'acos': return this.fromRadians(PrecisionMath.acos(args[0]));
+      case 'atan': return this.fromRadians(PrecisionMath.atan(args[0]));
+      case 'atan2': return this.fromRadians(PrecisionMath.atan2(args[0], args[1]));
       
       // Hyperbolic functions (always in natural units)
-      case 'sinh': return Math.sinh(args[0]);
-      case 'cosh': return Math.cosh(args[0]);
-      case 'tanh': return Math.tanh(args[0]);
-      case 'asinh': return Math.asinh(args[0]);
-      case 'acosh': return Math.acosh(args[0]);
-      case 'atanh': return Math.atanh(args[0]);
+      case 'sinh': return PrecisionMath.sinh(args[0]);
+      case 'cosh': return PrecisionMath.cosh(args[0]);
+      case 'tanh': return PrecisionMath.tanh(args[0]);
+      case 'asinh': return PrecisionMath.asinh(args[0]);
+      case 'acosh': return PrecisionMath.acosh(args[0]);
+      case 'atanh': return PrecisionMath.atanh(args[0]);
       
-      case 'log': return Math.log(args[0]);
-      case 'log10': return Math.log10(args[0]);
-      case 'log2': return Math.log2(args[0]);
-      case 'exp': return Math.exp(args[0]);
-      case 'expm1': return Math.expm1(args[0]);
-      case 'log1p': return Math.log1p(args[0]);
+      case 'log': return PrecisionMath.log(args[0]);
+      case 'log10': return PrecisionMath.log10(args[0]);
+      case 'log2': return PrecisionMath.log2(args[0]);
+      case 'exp': return PrecisionMath.exp(args[0]);
+      case 'expm1': return PrecisionMath.expm1(args[0]);
+      case 'log1p': return PrecisionMath.log1p(args[0]);
       case 'min': return this.min(args);
       case 'max': return this.max(args);
       case 'mean': return this.mean(args);
@@ -336,8 +290,8 @@ export class MathEvaluator {
 
   private evaluateSummation(node: ASTNode): any {
     const variableName = (node.variable as any).value as string;
-    const startValue = this.evaluateASTNode(node.start!);
-    const endValue = this.evaluateASTNode(node.end!);
+    const startValue = this.evaluateNode(node.start!);
+    const endValue = this.evaluateNode(node.end!);
     const expression = node.expression!;
     
     // Validate start and end values
@@ -360,7 +314,7 @@ export class MathEvaluator {
         this.context.variables.set(variableName, i);
         
         // Evaluate the expression with the current variable value
-        const termValue = this.evaluateASTNode(expression);
+        const termValue = this.evaluateNode(expression);
         
         // Add to sum (ensure it's a number)
         if (typeof termValue === 'number') {
@@ -391,19 +345,6 @@ export class MathEvaluator {
     return result;
   }
 
-  private containsUnsafePatterns(expression: string): boolean {
-    const unsafePatterns = [
-      /\b(import|require|eval|Function|setTimeout|setInterval)\b/,
-      /__proto__|prototype/,
-      /\bconstructor\b/,
-      /\bprocess\b/,
-      /\bglobal\b/,
-      /\bwindow\b/,
-      /\bdocument\b/,
-    ];
-
-    return unsafePatterns.some(pattern => pattern.test(expression));
-  }
 
   private formatResult(result: any): any {
     // Handle mathjs types
@@ -707,14 +648,14 @@ export class MathEvaluator {
 
   private toRadians(angle: number): number {
     if (this.config.angleMode === 'degrees') {
-      return angle * (Math.PI / 180);
+      return PrecisionMath.multiply(angle, PrecisionMath.divide(PrecisionMath.PI, 180));
     }
     return angle;
   }
 
   private fromRadians(angle: number): number {
     if (this.config.angleMode === 'degrees') {
-      return angle * (180 / Math.PI);
+      return PrecisionMath.multiply(angle, PrecisionMath.divide(180, PrecisionMath.PI));
     }
     return angle;
   }

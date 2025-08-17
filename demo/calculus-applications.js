@@ -43,7 +43,7 @@ derivativeExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -97,7 +97,7 @@ integrationExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -143,7 +143,7 @@ limitExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -195,7 +195,7 @@ seriesExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -237,7 +237,7 @@ sigmaSeriesExamples.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {

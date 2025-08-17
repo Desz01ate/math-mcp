@@ -29,7 +29,7 @@ for (const expr of testCases) {
     console.log(`  Parsed successfully`);
     
     // Then test evaluation
-    const evalResult = evaluator.evaluateAST(parseResult.ast);
+    const evalResult = evaluator.evaluate(parseResult.ast);
     if (evalResult.success) {
       console.log(`  Result: ${evalResult.result}`);
     } else {

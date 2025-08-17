@@ -32,7 +32,7 @@ examples.forEach((expr, index) => {
     }
     
     // Evaluate the expression
-    const evalResult = evaluator.evaluateAST(parseResult.ast);
+    const evalResult = evaluator.evaluate(parseResult.ast);
     
     if (evalResult.success) {
       console.log(`   ✅ Result: ${evalResult.result}`);
@@ -87,7 +87,7 @@ gradientExpressions.forEach((expr, index) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`   ✅ Result: ${evalResult.result}`);
       } else {
@@ -110,7 +110,7 @@ console.log(`MSE = ${mseExpr}`);
 try {
   const parseResult = parser.parse(mseExpr);
   if (parseResult.isValid) {
-    const evalResult = evaluator.evaluateAST(parseResult.ast);
+    const evalResult = evaluator.evaluate(parseResult.ast);
     if (evalResult.success) {
       console.log(`✅ MSE: ${evalResult.result}`);
     }
@@ -141,7 +141,7 @@ partialDerivatives.forEach(({name, expr}) => {
   try {
     const parseResult = parser.parse(expr);
     if (parseResult.isValid) {
-      const evalResult = evaluator.evaluateAST(parseResult.ast);
+      const evalResult = evaluator.evaluate(parseResult.ast);
       if (evalResult.success) {
         console.log(`  ✅ Result: ${evalResult.result}`);
       } else {
