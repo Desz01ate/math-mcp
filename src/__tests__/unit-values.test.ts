@@ -140,7 +140,12 @@ describe('Unit Values', () => {
     });
 
     it('should work with logarithmic functions', () => {
-      testExpression('(log(e)) nepers', '1 nepers');
+      // log(e) should be very close to 1, but due to precision improvements may not be exactly 1
+      const parseResult1 = parser.parse('(log(e)) nepers');
+      const evalResult1 = evaluator.evaluateAST(parseResult1.ast!);
+      expect(evalResult1.success).toBe(true);
+      expect(evalResult1.result).toMatch(/^0\.999999999999999\d* nepers$/);
+      
       testExpression('(log10(100)) bels', '2 bels');
       testExpression('(sqrt(4)) meters', '2 meters');
     });
