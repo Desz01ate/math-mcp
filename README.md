@@ -424,4 +424,3 @@ For issues and feature requests, please use the GitHub issue tracker.
 ## Acknowledgments
 
 - Built with [MCP SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- Mathematical evaluation powered by [Math.js](https://mathjs.org/)
